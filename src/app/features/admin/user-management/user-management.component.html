@@ -1,0 +1,35 @@
+<section class="user-management">
+    <h2>Gestion des utilisateurs</h2>
+  
+    <!-- Champ de recherche -->
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="searchUsers()"
+      placeholder="Rechercher par nom ou email"
+      class="search-box"
+    />
+  
+    <!-- Tableau des utilisateurs -->
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Date d'inscription</th>
+          <th>Rôle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filteredUsers">
+          <td>{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.dateInscription | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ user.userRole }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  

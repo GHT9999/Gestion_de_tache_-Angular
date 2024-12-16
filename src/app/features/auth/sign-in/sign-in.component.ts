@@ -1,31 +1,62 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
+
   selector: 'app-sign-in',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.css'],
 })
 export class SignInComponent {
-  email: string = '';
-  password: string = '';
+  authRequest = {
+    email: '',
+    password: '',
+  };
+  errorMessage: string | null = null;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
-  onSignIn(): void {
-    this.authService.signIn(this.email, this.password).subscribe({
-      next: (response) => {
-        console.log('Login successful', response);
-        // Stocke le token (si présent) dans le localStorage
-        localStorage.setItem('token', response.jwt);
-        // Redirige l'utilisateur vers une autre page
-        this.router.navigate(['/dashboard']);
+  onLogin() {
+    console.log('Auth Request:', this.authRequest); // Verify the input values
+  
+    this.authService.signIn(this.authRequest).subscribe({
+      next: (response: { jwt: string }) => { // Updated to match 'jwt' field
+        console.log('Login Success:', response);
+        
+        const token = response.jwt; // Correctly access the JWT
+        localStorage.setItem('jwtToken', token);
+  
+        // Decode the token to extract the role
+        const role = this.authService.getDecodedRole(token);
+        console.log('Decoded Role:', role);
+  
+        // Redirect based on role
+        if (role === 'ADMIN') {
+          this.router.navigate(['/admin/dashboard']);
+        } else if (role === 'NORMAL') {
+          this.router.navigate(['/user/dashboard']);
+        } else {
+          this.errorMessage = 'Unknown role. Please contact support.';
+        }
       },
-      error: (error) => {
-        console.error('Login failed', error);
-        alert('Invalid email or password.');
+  
+      error: (error: any) => {
+        console.error('Login Error:', error);
+        this.errorMessage = 'Invalid email or password.';
       },
     });
   }
+  
+
 }
+
+
+
+
+
+

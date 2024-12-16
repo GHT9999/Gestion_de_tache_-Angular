@@ -5,9 +5,9 @@
     <div class="form-group">
       <label for="username">Nom d'utilisateur</label>
       <input
-        id="username"
-        [(ngModel)]="user.username"
-        name="username"
+        id="name"
+        [(ngModel)]="user.name"
+        name="name"
         required
       />
     </div>
@@ -35,6 +35,9 @@
     </div>
 
     <button type="submit" class="btn-primary">Créer un compte</button>
+    <p class="register-link">
+    <a routerLink="/signin" class="btn">Se Connecter</a>
+    </p>
   </form>
 
   <div *ngIf="errorMessage" class="error">

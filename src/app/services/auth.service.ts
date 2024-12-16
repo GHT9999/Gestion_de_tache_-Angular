@@ -24,7 +24,7 @@ export class AuthService {
 
   // Signin method
   signIn(authRequest: { email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/signin`, authRequest);
+    return this.http.post(`${this.baseUrl}/login`, authRequest);
   }
 
   getDecodedRole(token: string | null): string | null {
@@ -35,20 +35,17 @@ export class AuthService {
   
     try {
       const decodedToken = this.jwtHelper.decodeToken(token);
+      console.log('Decoded Token:', decodedToken);
   
-      // Extract roles from the decoded token
-      const rolesArray = decodedToken?.roles || [];
-      if (rolesArray.length > 0) {
-        const role = rolesArray[0]?.authority || null; // Get the first role
-        return role;
-      } else {
-        console.warn('No roles found in token.');
-        return null;
-      }
+      // Adjust for 'userRole' as defined in the backend payload
+      const role = decodedToken?.userRole || null; 
+      console.log('Extracted Role:', role);
+      return role;
     } catch (error) {
       console.error('Error decoding token:', error);
       return null;
     }
-  }
   
+  
+  }
 }

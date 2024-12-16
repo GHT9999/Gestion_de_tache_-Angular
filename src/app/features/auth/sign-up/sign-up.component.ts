@@ -15,10 +15,9 @@ import { RouterModule } from '@angular/router';
 })
 export class SignUpComponent {
   user = {
-    username: '',
+    name: '',
     email: '',
-    password: '',
-    role: 'USER', // Default role is USER
+    password: ''
   };
 
   errorMessage: string | null = null;
