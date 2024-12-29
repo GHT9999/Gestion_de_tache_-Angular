@@ -1,5 +1,38 @@
-<app-sidebar-user></app-sidebar-user>
-<div class="content">
-  <h2>User Dashboard</h2>
-  <!-- User content here -->
+<div class="layout-container">
+  <!-- Dashboard Content -->
+  <div class="dashboard-content">
+    <h2 class="dashboard-title">Your Projects</h2>
+
+    <!-- No Projects Message -->
+    <div *ngIf="projects.length === 0" class="no-projects">
+      <p>No projects available.</p>
+    </div>
+
+    <!-- Projects Cards -->
+     
+    <div class="projects-grid">
+      
+      <div *ngFor="let project of projects" class="project-card">
+        <button 
+          class="edit-button" 
+          *ngIf="project.owner?.id === userId" 
+          (click)="viewProject(project.id)"
+        >
+          <img src="../../../../assets/icons/edit-icon.png" alt="Edit" class="edit-icon" />
+        </button>
+        <h3 class="project-title">{{ project.name }}</h3>
+        <p class="project-description">{{ project.description }}</p>
+        <div class="project-meta">
+          <span class="meta-item">Created: {{ project.startDate | date }}</span>
+          <!-- Display Owner ID only if project.owner is not null -->
+          <span class="meta-item">Owner Name: {{ project.owner?.name || 'No owner assigned' }}</span>
+
+          
+          
+          
+        </div>
+        <button class="view-button " (click)="ProjectPage(project.id)" > View Project </button>
+      </div>
+    </div>
+  </div>
 </div>

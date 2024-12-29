@@ -1,5 +1,10 @@
-<app-sidebar-admin></app-sidebar-admin>
-<div class="content">
-  <h2>Admin Dashboard</h2>
-  <!-- Admin content here -->
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <app-sidebar-admin></app-sidebar-admin>
+
+  <!-- Main Content -->
+  <div class="admin-content">
+    <router-outlet></router-outlet> <!-- Displays routed content -->
+  </div>
 </div>
+

@@ -1,9 +1,26 @@
-<nav class="sidebar">
-    <h3>User Panel</h3>
+<div class="sidebar">
+  <!-- Sidebar Logo -->
+  <div class="logo">Gestion de tache</div>
+
+  <!-- Navigation Links -->
+  <nav>
     <ul>
-      <li><a routerLink="/user/dashboard">Dashboard</a></li>
-      <li><a routerLink="/user/tasks">My Tasks</a></li>
-      <li><a routerLink="/user/profile">Profile</a></li>
+      <!-- Use routerLink for better Angular routing -->
+      <li>
+        <a routerLink="/user/userdashboard">📊 Dashboard</a>
+      </li>
+      <li>
+        <a routerLink="/user/create-project">Create Project</a>
+      </li>
+      <li>
+        <a routerLink ="/user/team-dashboard">create Teams </a>
+      </li>
+      
     </ul>
   </nav>
+
+  <!-- Divider -->
+  <div class="divider"></div>
+
   
+</div>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -29,7 +29,7 @@ export class SignInComponent {
         console.log('Login Success:', response);
         
         const token = response.jwt; // Correctly access the JWT
-        localStorage.setItem('jwtToken', token);
+        localStorage.setItem('token', token);
   
         // Decode the token to extract the role
         const role = this.authService.getDecodedRole(token);
@@ -37,9 +37,9 @@ export class SignInComponent {
   
         // Redirect based on role
         if (role === 'ADMIN') {
-          this.router.navigate(['/admin/dashboard']);
+          this.router.navigate(['/admin']);
         } else if (role === 'NORMAL') {
-          this.router.navigate(['/user/dashboard']);
+          this.router.navigate(['/user']);
         } else {
           this.errorMessage = 'Unknown role. Please contact support.';
         }

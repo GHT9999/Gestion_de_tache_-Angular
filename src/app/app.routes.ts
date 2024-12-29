@@ -1,28 +1,30 @@
-import { provideRouter, Routes } from '@angular/router';
-import { SignInComponent } from './features/auth/sign-in/sign-in.component';
-import { SignUpComponent } from './features/auth/sign-up/sign-up.component';
-import { AdminDashboardComponent } from './features/admin/admin-dashboard/admin-dashboard.component';
-import { UserDashboardComponent } from './features/user/user-dashboard/user-dashboard.component';
-
-
+import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: 'signin', component: SignInComponent },
-  { path: 'signup', component: SignUpComponent },
   {
     path: 'admin',
-    children: [
-      { path: 'dashboard', component: AdminDashboardComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-    ],
+    loadChildren: () =>
+      import('./features/admin/admin.module').then((m) => m.AdminModule),
+  },
+ {
+    path: 'user',
+    loadChildren: () =>
+      import('./features/user/user.module').then(m => m.UserModule),
   },
   {
-    path: 'user',
-    children: [
-      { path: 'dashboard', component: UserDashboardComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-    ],
+    path: 'signin',
+    loadComponent: () =>
+      import('./features/auth/sign-in/sign-in.component').then(
+        (m) => m.SignInComponent
+      ),
   },
-  { path: '', redirectTo: '/signin', pathMatch: 'full' }  // Default route
+  {
+    path: 'signup',
+    loadComponent: () =>
+      import('./features/auth/sign-up/sign-up.component').then(
+        (m) => m.SignUpComponent
+      ),
+  },
+  { path: '', redirectTo: 'signin', pathMatch: 'full' },
+  { path: '**', redirectTo: 'signin' }, // Catch-all route
 ];
-export const appRoutingProviders = [provideRouter(routes)];

@@ -1,0 +1,89 @@
+/* Dashboard Content */
+.dashboard-content {
+    margin-left: 180px;
+    padding: 2rem;
+    background-color: #1c1c1c; /* Dark background */
+    color: #ecf0f1;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease-in-out;
+  }
+  
+  .dashboard-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #ecf0f1;
+    text-align: center;
+  }
+  
+  .no-projects {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #888;
+  }
+  
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 20px;
+  }
+  
+  .project-card {
+    background-color: #34495e; /* Slightly lighter background for cards */
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+  .project-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ecf0f1;
+    margin-bottom: 0.75rem;
+  }
+  
+  .project-description {
+    font-size: 1.1rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+  }
+  
+  .project-meta {
+    font-size: 0.9rem;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  
+  .meta-item {
+    margin-right: 0.5rem;
+  }
+  
+  .view-button {
+    display: inline-block;
+    background-color: #2980b9; /* Blue color */
+    color: #fff;
+    text-align: center;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .view-button:hover {
+    background-color: #1a598a; /* Darker blue on hover */
+  }
+  

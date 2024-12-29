@@ -1,0 +1,195 @@
+/* General Styling */
+body {
+  background-color: #1c1f24;
+  font-family: 'Arial', sans-serif;
+  color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Loading Message */
+.loading {
+  color: #ffc107;
+  font-size: 18px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Project Form */
+.project-form {
+  background-color: #2a2d34;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+}
+
+.project-form h2 {
+  text-align: center;
+  color: #00bcd4;
+  margin-bottom: 15px;
+}
+
+.project-form label {
+  display: block;
+  font-size: 14px;
+  color: #a1a1a1;
+  margin-bottom: 5px;
+}
+
+.project-form input,
+.project-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+  background-color: #222529;
+  color: #f5f5f5;
+}
+
+.project-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.project-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Error Message */
+.error-message {
+  background-color: #ff4d4d;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+/* User Management Section */
+.user-management {
+  background-color: #2a2d34;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.user-management h3 {
+  color: #00bcd4;
+  margin-bottom: 15px;
+}
+
+.user-management ul {
+  list-style: none;
+  padding: 0;
+}
+
+.user-management li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #4a4a4a;
+}
+
+.user-management button {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.user-management button:hover {
+  background-color: #e63939;
+}
+
+/* Add User Section */
+.add-user,
+.add-team {
+  background-color: #2a2d34;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.add-user h3,
+.add-team h3 {
+  color: #00bcd4;
+  margin-bottom: 15px;
+}
+
+.add-user input,
+.add-team input {
+  width: calc(100% - 120px);
+  padding: 10px;
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+  background-color: #222529;
+  color: #f5f5f5;
+  margin-right: 10px;
+}
+
+.add-user button,
+.add-team button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-user button:hover,
+.add-team button:hover {
+  background-color: #0056b3;
+}
+
+/* Team Management Section */
+.team-management {
+  background-color: #2a2d34;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.team-management h3 {
+  color: #00bcd4;
+  margin-bottom: 15px;
+}
+
+.team-management ul {
+  list-style: none;
+  padding: 0;
+}
+
+.team-management li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #4a4a4a;
+}
+
+.team-management button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.team-management button:hover {
+  background-color: #0056b3;
+}
+

@@ -1,0 +1,55 @@
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #14263a;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-left .path {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .navbar-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .add-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    margin-right: 15px;
+    cursor: pointer;
+  }
+  
+  .add-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-name {
+    margin-right: 10px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .user-image {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+  }
+  
