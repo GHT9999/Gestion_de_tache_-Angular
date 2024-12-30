@@ -100,4 +100,14 @@ deleteTeam(projectId: number, teamId: number): Observable<any> {
   return this.http.delete(`${this.baseUrl}/delete_team/${projectId}/${teamId}`,  { headers });
 }
 
+deleteProject(projectId: number): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.delete(`${this.baseUrl}/deleteProject/${projectId}`, {
+    headers,
+    observe: 'response', // Observe full HTTP response
+    responseType: 'text', // Expect plain text response
+  });
+}
+
+
 }

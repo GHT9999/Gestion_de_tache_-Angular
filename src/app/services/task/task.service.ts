@@ -63,6 +63,11 @@ export class TaskService {
     return this.http.post<any>(url, task, { headers });
   }
   
+  deleteTask(projectId: number, taskId: number): Observable<void> {
+    const url = `${this.apiUrl}/deletetask/${taskId}`;
+    const headers = this.getAuthHeaders();
+    return this.http.delete<void>(url, { headers , responseType: 'json' });
+  }
   
   
   

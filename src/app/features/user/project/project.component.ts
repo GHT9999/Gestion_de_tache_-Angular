@@ -6,8 +6,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TeamService } from '../../../services/team/team.service'; // Import TeamService
+import { TeamService } from '../../../services/team/team.service';
 import { TeamDto } from '../../../models/team/teamDto.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   imports: [RouterModule, FormsModule, CommonModule],
@@ -17,6 +18,9 @@ import { TeamDto } from '../../../models/team/teamDto.model';
 })
 export class ProjectComponent implements OnInit {
   projectId: number = 0;
+  projectOwnerId: number | null = null;
+  projectOwnerEmail: string | null = null;
+
   project: ProjectResponse = {
     id: 0,
     name: '',
@@ -26,197 +30,124 @@ export class ProjectComponent implements OnInit {
     owner: null,
   };
   newTeamName: string = '';
- // Ensure `newTeamName` is initialized
-  newTeam: TeamDto = {
-    id: 0, // The backend will generate this
-    name: this.newTeamName.trim(),
-    dateCreation: new Date(), // You can pass the current date or let the backend handle it
-    projectId: this.projectId,
-    projectName: this.project.name,
-    users: [], // Empty user list initially
-  };
+  newUserEmail: string = '';
   isLoading: boolean = true;
   errorMessage: string = '';
-  projectUsers: string[] = []; // Define projectUsers
-  projectTeams: any[] = []; // Define projectTeams
-  newUserEmail: string = ''; // Define newUserEmail
-  
-
+  projectUsers: string[] = [];
+  projectTeams: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
-    private teamService: TeamService, // Inject TeamService
-    private router: Router
+    private teamService: TeamService,
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
     const token = localStorage.getItem('token');
     if (!token) {
-      this.router.navigate(['/sign-in']); // Redirect to login if no token
+      this.router.navigate(['/sign-in']);
     } else {
       const projectIdFromRoute = this.route.snapshot.paramMap.get('projectId');
       this.projectId = projectIdFromRoute ? +projectIdFromRoute : 0;
-  
+
       if (this.projectId > 0) {
-        this.fetchProjectDetails();  // Fetch project details
-        this.loadProjectUsers();    // Fetch project users
+        this.initializeProject();
       }
     }
   }
-  
 
-  fetchProjectDetails(): void {
+  // Initialize project details and related data
+  initializeProject(): void {
+    this.isLoading = true;
     this.projectService.getProjectById(this.projectId).subscribe({
-      next: (data) => {
-        this.project = data;
-  
-        // Ensure startDate and endDate are initialized
-        if (!this.project.startDate) {
-          this.project.startDate = new Date();
-        }
-        if (!this.project.endDate) {
-          this.project.endDate = new Date();
-        }
+      next: (project) => {
+        this.project = project;
+        this.projectOwnerId = project.owner?.id || null;
+        this.projectOwnerEmail = project.owner?.email || null;
+        this.project.startDate = project.startDate || new Date();
+        this.project.endDate = project.endDate || new Date();
+
+        this.loadProjectUsers();
   
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching project:', err);
+        this.toastr.error('Failed to load project details.', 'Error');
         this.isLoading = false;
-        this.errorMessage = 'Failed to load project details.';
       },
     });
   }
-  
 
   onUpdateProject(): void {
     if (this.project.endDate && this.project.startDate && this.project.endDate < this.project.startDate) {
-      console.error("End date cannot be before the start date.");
+      this.toastr.error('End date cannot be before the start date.', 'Error');
       return;
     }
-    
-  
+
     this.projectService.updateProject(this.projectId, this.project).subscribe({
       next: () => {
-        alert('Project updated successfully!');
+        this.toastr.success('Project updated successfully!', 'Success');
       },
       error: (err) => {
         console.error('Error updating project:', err);
-        if (err.error && err.error.message) {
-          alert(err.error.message);
-        } else {
-          alert('Failed to update project. Please check your input.');
-        }
+        this.toastr.error('Failed to update project. Please check your input.', 'Error');
       },
     });
   }
-  
-  
 
   loadProjectUsers(): void {
     this.projectService.getProjectUsers(this.projectId).subscribe({
       next: (users) => {
-        this.projectUsers = users || []; // Assign empty array if `users` is null/undefined
+        this.projectUsers = (users || []).filter((userEmail) => userEmail !== this.projectOwnerEmail);
       },
-      error: (error) => {
-        this.errorMessage = 'Error loading project users.';
-        console.error('Error loading users:', error);
+      error: (err) => {
+        console.error('Error loading project users:', err);
+        this.toastr.error('Error loading project users.', 'Error');
       },
     });
   }
-  
 
-  loadProjectTeams(): void {
-    this.teamService.getTeamsForProject(this.projectId).subscribe({
-      next: (teams: any[]) => {
-        this.projectTeams = teams;
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Error loading project teams:', err);
-      },
-    });
-  }
+  
 
   addUserToProject(): void {
     if (!this.newUserEmail.trim()) {
-      this.errorMessage = 'Please enter a valid email';
+      this.toastr.warning('Please enter a valid email', 'Warning');
       return;
     }
-  
+
     this.projectService.addUserToProjectByEmail(this.projectId, this.newUserEmail).subscribe({
       next: () => {
-        this.loadProjectUsers(); // Reload the project users
-        this.newUserEmail = ''; // Clear the input field
-        this.errorMessage = ''; // Clear any existing error messages
+        this.loadProjectUsers();
+        this.clearFormFields();
+        this.toastr.success('User added to project successfully!', 'Success');
       },
       error: (err) => {
         console.error('Error adding user to project:', err);
-        this.errorMessage = 'Error adding user';
+        this.toastr.error('No user with this email .  Please check your input ', 'Error');
       },
     });
   }
-  
-  
 
   removeUserFromProject(userEmail: string): void {
     this.projectService.removeUserFromProjectByEmail(this.projectId, userEmail).subscribe({
       next: () => {
-        this.loadProjectUsers(); // Reload the list of project users
-        this.errorMessage = ''; // Clear any existing error messages
+        this.loadProjectUsers();
+        this.toastr.success('User removed from project successfully!', 'Success');
       },
       error: (err) => {
         console.error('Error removing user from project:', err);
-        this.errorMessage = 'Error removing user';
-      },
-    });
-  }
-  
-  addTeamToProject(): void {
-    if (!this.newTeamName.trim()) {
-      this.errorMessage = 'Please enter a valid team name';
-      return;
-    }
-  
-    // Create the new team object
-    const newTeam: TeamDto = {
-      id: 0, // The backend will generate this
-      name: this.newTeamName.trim(),
-      dateCreation: new Date(), // You can pass the current date or let the backend handle it
-      projectId: this.projectId,
-      projectName: this.project.name,
-      users: [], // Empty user list initially
-    };
-  
-    // Call the service to create the team
-    this.teamService.createTeam(this.projectId, newTeam).subscribe({
-      next: () => {
-        this.loadProjectTeams(); // Refresh the list of teams
-        this.newTeamName = '';  // Reset the input field
-        this.errorMessage = ''; // Clear any error messages
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Error adding team to project:', err);
-        this.errorMessage = 'Error adding team';
-      },
-    });
-  }
-  
-  
-  
-  removeTeamFromProject(teamId: number): void {
-    this.teamService.deleteTeam(this.projectId, teamId).subscribe({
-      next: () => {
-        this.loadProjectTeams();
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Error removing team from project:', err);
-        this.errorMessage = 'Error removing team';
+        this.toastr.error('Error removing user from project.', 'Error');
       },
     });
   }
 
-  viewTeam(teamId: number): void {
-    this.router.navigate([`/user/team-management/${this.projectId}/${teamId}`]);
+
+
+  clearFormFields(): void {
+    this.newUserEmail = '';
+    this.errorMessage = '';
   }
 }

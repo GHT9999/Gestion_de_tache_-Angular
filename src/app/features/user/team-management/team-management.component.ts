@@ -1,23 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TeamService } from '../../../services/team/team.service';  // Adjust the path as needed
-import { UserService } from '../../../services/user/user.service';  // Adjust the path as needed
-import { TeamDto } from '../../../models/team/teamDto.model';  // Adjust the path as needed
-import { UserResponse } from '../../../models/user/user-response.model';  // Adjust the path as needed
+import { TeamService } from '../../../services/team/team.service'; // Adjust the path as needed
+import { UserService } from '../../../services/user/user.service'; // Adjust the path as needed
+import { TeamDto } from '../../../models/team/teamDto.model'; // Adjust the path as needed
+import { UserResponse } from '../../../models/user/user-response.model'; // Adjust the path as needed
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr'; // Import ToastrService
 
 @Component({
   selector: 'app-team-management',
   templateUrl: './team-management.component.html',
   styleUrls: ['./team-management.component.css'],
-  imports : [CommonModule,
-      FormsModule,]
+  imports: [CommonModule, FormsModule],
 })
 export class TeamManagementComponent implements OnInit {
   teamId: number = 0;
-  teamName : String = '';
-  projectId : number = 0;
+  teamName: string = '';
+  projectId: number = 0;
   team: TeamDto | null = null;
   users: UserResponse[] = [];
   selectedUserEmail: string = '';
@@ -27,91 +27,90 @@ export class TeamManagementComponent implements OnInit {
     private route: ActivatedRoute,
     private teamService: TeamService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService // Inject ToastrService
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const projectId = params.get('projectid');  // Get projectId from URL
-      const teamId = params.get('teamId');        // Get teamId from URL
-  
+    this.route.paramMap.subscribe((params) => {
+      const projectId = params.get('projectid'); // Get projectId from URL
+      const teamId = params.get('teamId'); // Get teamId from URL
+
       if (projectId && teamId) {
-        this.projectId = +projectId;  // Convert to number if not null
-        this.teamId = +teamId;        // Convert to number if not null
-        this.loadTeamDetails();  // Fetch team details by teamId and projectId
+        this.projectId = +projectId; // Convert to number if not null
+        this.teamId = +teamId; // Convert to number if not null
+        this.loadTeamDetails(); // Fetch team details by teamId and projectId
       } else {
-        console.error('Missing projectId or teamId');
-        this.errorMessage = 'Project or Team not found';
+        this.toastr.error('Missing projectId or teamId.', 'Error');
       }
     });
   }
-  
-  
-
 
   loadTeamDetails(): void {
     if (this.projectId && this.teamId) {
-      console.log(`Project ID: ${this.projectId}, Team ID ::::: ${this.teamId}`);
-      this.teamService.getTeamById(this.projectId, this.teamId).subscribe(
-        (team: TeamDto) => {
+      this.teamService.getTeamById(this.projectId, this.teamId).subscribe({
+        next: (team: TeamDto) => {
           this.team = team;
-          this.users = team.users || [];  // Populate users list
+          this.users = team.users || []; // Populate users list
+          this.toastr.success('Team details loaded successfully.', 'Success');
         },
-        (err) => {
+        error: (err) => {
           console.error('Error fetching team details:', err);
-          this.errorMessage = 'Error loading team details';
-        }
-      );
+          this.toastr.error('Error loading team details.', 'Error');
+        },
+      });
     } else {
-      console.error('Missing projectId or teamId');
-      this.errorMessage = 'Team not found';
+      this.toastr.error('Missing projectId or teamId.', 'Error');
     }
   }
-  
-
-  
-  
 
   addUserToTeam(): void {
     if (this.selectedUserEmail.trim() === '') {
-      this.errorMessage = 'Email cannot be empty';
+      this.toastr.warning('Email cannot be empty.', 'Warning');
       return;
     }
-  
-    this.teamService.addUserToTeam(this.projectId || 0, this.teamId, this.selectedUserEmail).subscribe(
-      (updatedTeam) => {
+
+    this.teamService.addUserToTeam(this.projectId || 0, this.teamId, this.selectedUserEmail).subscribe({
+      next: (updatedTeam) => {
         this.team = updatedTeam;
         this.users = updatedTeam.users || [];
-        this.selectedUserEmail = '';  // Reset the input field
-        this.errorMessage = '';
+        this.selectedUserEmail = ''; // Reset the input field
+        this.toastr.success('User added to team successfully.', 'Success');
       },
-      (err) => {
+      error: (err) => {
+        if (err.status === 403) {
+          this.toastr.warning('Invalide email . Please check your imputs');
+        }
         console.error('Error adding user:', err);
-        this.errorMessage = 'Error adding user to team';
-      }
-    );
+        this.toastr.error('Error adding user to team.', 'Error');
+      },
+    });
   }
-  
-  
 
   removeUserFromTeam(userEmail: string): void {
     if (!userEmail.trim()) {
-      this.errorMessage = 'Email cannot be empty';
+      this.toastr.warning('Email cannot be empty.', 'Warning');
       return;
     }
-  
-    this.teamService.removeUserFromTeam(this.projectId || 0, this.teamId, userEmail).subscribe(
-      (updatedTeam) => {
+
+    this.teamService.removeUserFromTeam(this.projectId || 0, this.teamId, userEmail).subscribe({
+      next: (updatedTeam) => {
         this.team = updatedTeam;
         this.users = updatedTeam.users || [];
-        this.errorMessage = '';
+
+        this.toastr.success('User removed from team successfully.', 'Success');
+
+        // Check if the team has no more users
+        if (this.users.length === 0) {
+          this.router.navigate(['/user/team-dashboard']).then(() => {
+            this.toastr.info('The team is empty and has been removed.', 'Info');
+          });
+        }
       },
-      (err) => {
-        console.error('Error removing user:', err);
-        this.errorMessage = 'Error removing user from team';
-      }
-    );
+      error: (err) => {
+        console.error('Error removing user from team:', err);
+        this.toastr.error('Error removing user from team.', 'Error');
+      },
+    });
   }
-  
-  
 }

@@ -9,22 +9,27 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProjectComponent } from './project/project.component';
 import { TeamDashboardComponent } from './team-dashboard/team-dashboard.component';
 import { TeamManagementComponent } from './team-management/team-management.component';
+import { IconModule, IconSetService } from '@coreui/icons-angular';
+import { UserDetailsComponent } from './user-details/user-details.component';
 
 @NgModule({
  
   imports: [
    
     RouterModule,
+    IconModule,
     CommonModule,  // Ensure CommonModule is included
     UserRoutingModule ,
     TeamDashboardComponent,
     TeamManagementComponent,
     DashboardComponent,
+    UserDetailsComponent,
     ProjectComponent,
     SidebarUserComponent,
     UserDashboardComponent, 
     CreateProjectComponent,
     UserRoutingModule// Include UserRoutingModule here
   ],
+  providers :[IconSetService]
 })
 export class UserModule {}

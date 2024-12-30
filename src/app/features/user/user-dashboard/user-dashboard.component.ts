@@ -8,23 +8,34 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';  // Ensure this is present
 import { AuthService } from '../../../services/auth/auth.service';
-
+import { IconSetService } from '@coreui/icons-angular';
+import {  cilPencil } from '@coreui/icons';
+import { IconModule } from '@coreui/icons-angular';  // Import IconModule
+import { ProjectService } from '../../../services/project/project.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-user-dashboard',
   templateUrl: './user-dashboard.component.html',
   styleUrls: ['./user-dashboard.component.css'],
-  imports: [CommonModule,FormsModule ,RouterModule ], 
+  imports: [CommonModule,FormsModule ,RouterModule ,IconModule], 
   standalone: true, // Import NavbarComponent
 })
 export class UserDashboardComponent implements OnInit {
+[x: string]: any;
+cilPencil = cilPencil; 
   projects: ProjectResponse[] = [];
+  ownedProjects: ProjectResponse[] = [];
+  otherProjects: ProjectResponse[] = [];
   userId: number | null = null; // Declare userId
 
-  constructor(private userService: UserService , private router : Router , private authService: AuthService) {}
+  constructor(private userService: UserService , private router : Router , private authService: AuthService ,  public iconSet: IconSetService ,  private toastr: ToastrService , private projectService :ProjectService ) {
+    iconSet.icons = { cilPencil  };
+  }
 
   ngOnInit(): void {
     this.loadProjects(); // Automatically load projects when component initializes
+    
     this.userId = this.authService.getUserIdFromToken();
     console.log('Extracted User ID from Token:', this.userId);
   }
@@ -32,8 +43,14 @@ export class UserDashboardComponent implements OnInit {
   loadProjects(): void {
     this.userService.getProjectsForUser().subscribe({
       next: (data) => {
+        console.log(this.projects);
+console.log(this.ownedProjects);
+console.log(this.otherProjects);
+
         console.log('Projects loaded:', data);
         this.projects = data;
+        this.ownedProjects = this.projects.filter(project => project.owner?.id === this.userId);
+  this.otherProjects = this.projects.filter(project => project.owner?.id !== this.userId);
 
       },
       error: (err) => {
@@ -60,5 +77,27 @@ export class UserDashboardComponent implements OnInit {
         console.error('Invalid Project ID');
       }
   }
+  deleteProject(projectId: number): void {
+    if (confirm('Are you sure you want to delete this project?')) {
+      this.projectService.deleteProject(projectId).subscribe({
+        next: (response) => {
+          console.log('Response from delete:', response); // Debug the response
+          if (response.status === 200) {
+            this.toastr.success('Project deleted successfully', 'Success');
+            this.projects = this.projects.filter((project) => project.id !== projectId);
+            this.ownedProjects = this.ownedProjects.filter((project) => project.id !== projectId);
+        this.otherProjects = this.otherProjects.filter((project) => project.id !== projectId); // Remove from UI
+          }
+        },
+        error: (err) => {
+          console.error('Error while deleting project:', err); // Debug the error
+          this.toastr.error('Failed to delete project', 'Error');
+        },
+      });
+    }
+  }
+  
+  
+  
   
 }

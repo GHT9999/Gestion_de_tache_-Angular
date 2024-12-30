@@ -6,10 +6,10 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/admin/admin.module').then((m) => m.AdminModule),
   },
- {
+  {
     path: 'user',
     loadChildren: () =>
-      import('./features/user/user.module').then(m => m.UserModule),
+      import('./features/user/user.module').then((m) => m.UserModule),
   },
   {
     path: 'signin',

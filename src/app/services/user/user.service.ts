@@ -89,6 +89,17 @@ export class UserService {
     return this.http.get<ProjectResponse[]>(`http://localhost:8082/api/project/getAllProjectsForUser`, { headers });
   }
   
+ updateUserInfo(user: { name: string; email: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UpdateUser`, null, {
+      params: {
+        name: user.name,
+        email: user.email,
+      },
+    });
+  }
+  getUserDetails(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/users`);
+  }
 
   
 

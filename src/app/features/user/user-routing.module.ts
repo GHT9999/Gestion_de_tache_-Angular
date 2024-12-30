@@ -8,6 +8,8 @@ import { projectDashboardComponent } from './project-dashboard/project-dashboard
 import { TeamDashboardComponent } from './team-dashboard/team-dashboard.component';
 import { TeamManagementComponent } from './team-management/team-management.component';
 import { TaskDetailsComponent } from './task-details/task-details.component';
+import { UserDetailsComponent } from './user-details/user-details.component';
+import { SignInComponent } from '../auth/sign-in/sign-in.component';
 
 
 const routes: Routes = [
@@ -24,6 +26,9 @@ const routes: Routes = [
       {path :'team-dashboard' , component : TeamDashboardComponent},
       { path: 'team-management/:projectid/:teamId', component: TeamManagementComponent },
       { path: 'task-detail/:projectId/:taskId', component: TaskDetailsComponent },
+      { path: 'user-details', component: UserDetailsComponent },
+      
+
 
 
       

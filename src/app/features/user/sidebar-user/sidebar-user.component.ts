@@ -32,6 +32,12 @@ export class SidebarUserComponent implements OnInit {
       },
     });
   }
+  logout(): void {
+    // Remove token from local storage or session storage
+    localStorage.removeItem('token');
+    // Navigate to login page
+    this.router.navigate(['/login']);
+  }
 
   
 }

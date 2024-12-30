@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { ProjectService } from '../../../services/project/project.service';
 import { ProjectResponse } from '../../../models/project/project-response.model';
 import { AuthService } from '../../../services/auth/auth.service';
+import { ToastrService } from 'ngx-toastr'; // Import ToastrService
 
 @Component({
   imports: [CommonModule, FormsModule, RouterModule],
@@ -40,7 +41,7 @@ export class projectDashboardComponent implements OnInit {
   };
 
 
-  constructor(private route: ActivatedRoute, private taskService: TaskService, private projectService: ProjectService, private authService: AuthService) { }
+  constructor(private route: ActivatedRoute, private taskService: TaskService, private projectService: ProjectService, private authService: AuthService , private toastr: ToastrService ) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -66,10 +67,12 @@ export class projectDashboardComponent implements OnInit {
       (tasks) => {
         this.tasks = tasks; // Store all tasks
         console.log(tasks);
-        this.filteredTasks = tasks; // Initially, all tasks are displayed
+        this.filteredTasks = tasks;
+        
       },
       (err) => {
         console.error('Error fetching tasks:', err);
+        this.toastr.error('Failed to load tasks.', 'Error');
       }
     );
   }
@@ -118,10 +121,14 @@ export class projectDashboardComponent implements OnInit {
     this.taskService.setTaskStatus(task.id, newStatus).subscribe({
       next: () => {
         task.status = newStatus; // Update the status locally after success
-        console.log(`Task ${task.id} status updated to ${newStatus}`);
+        this.toastr.success(
+          `Task ${task.id} status updated to ${newStatus}.`,
+          'Success'
+        );
       },
       error: (err) => {
         console.error('Error updating task status:', err);
+        this.toastr.error('Failed to update task status.', 'Error');
       },
     });
   }
@@ -149,7 +156,7 @@ export class projectDashboardComponent implements OnInit {
   }
   createTask(): void {
     if (!this.newTask.title || !this.newTask.description || !this.newTask.priorite || !this.newTask.couleur) {
-      console.error('All fields are required');
+      this.toastr.warning('All fields are required to create a task.', 'Warning');
       return;
     }
   
@@ -165,14 +172,40 @@ export class projectDashboardComponent implements OnInit {
         console.log('Task created successfully:', createdTask);
         this.tasks.push(createdTask);
         this.filteredTasks = this.tasks;
-        // Optional: Clear form fields
+        this.toastr.success('Task created successfully.', 'Success');
       },
       error: (err) => {
         console.error('Error creating task:', err);
+        this.toastr.error('Failed to create task.', 'Error');
       },
     });
     
     
+  }
+  
+  deleteTask(taskId: number): void {
+    if (confirm('Are you sure you want to delete this task?')) {
+      this.taskService.deleteTask(this.projectId, taskId).subscribe({
+        next: () => {
+           // Reload the task list
+          // Remove the deleted task from the local task list
+          this.tasks = this.tasks.filter((task) => task.id !== taskId);
+          this.filteredTasks = this.tasks;
+         
+        },
+        error: (err) => {
+          if (err.status === 200) {
+            this.loadTasks();
+            this.toastr.success('Task deleted successfully.', 'Success');
+          }
+          else{
+            console.error('Error deleting task:', err);
+            this.toastr.error('Failed to delete task.', 'Error');
+          }
+          
+        },
+      });
+    }
   }
   
 

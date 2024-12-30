@@ -5,6 +5,7 @@ import { ProjectService } from '../../../services/project/project.service'; // A
 import { TaskDto } from '../../../models/task/taskDto.model'; // Adjust path if needed
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr'; // Import ToastrService
 
 @Component({
   imports : [CommonModule,FormsModule],
@@ -26,7 +27,8 @@ export class TaskDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private taskService: TaskService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private toastr: ToastrService 
   ) {}
 
   ngOnInit(): void {
@@ -66,37 +68,41 @@ export class TaskDetailsComponent implements OnInit {
   updateTask(): void {
     this.taskService.updateTask(this.taskId, this.task).subscribe(
       () => {
-        this.message = 'Task updated successfully!';
+        this.toastr.success('Task updated successfully!', 'Success');
       },
       (err) => {
         console.error('Error updating task:', err);
-        this.message = 'Error updating task';
+        this.toastr.error('Failed to update task. check inputs ', 'Error');
       }
     );
   }
 
   assignTask(): void {
     if (!this.selectedUser) {
-      this.errorMessage = 'Please select a user to assign the task.';
+      this.toastr.warning('Please select a user to assign the task.', 'Warning');
       return;
     }
   
     this.taskService.assignTask(this.task.id, this.selectedUser).subscribe({
-      next: (response) => {
-        this.message = 'Task assigned successfully!';
+      next: () => {
+        // Success: Show notification and reload task details
+        this.toastr.success('Task assigned successfully!', 'Success');
         this.errorMessage = ''; // Clear any previous error
-        console.log('Assign Task Response:', response);
-        this.fetchTaskDetails();
+        this.fetchTaskDetails(); // Reload task details
       },
       error: (err) => {
-        console.error('Error assigning task:', err);
-        this.errorMessage = 'Error assigning task';
-      }
-
-      
+        // Handle 200 OK error
+        if (err.status === 200) {
+          this.toastr.success('Task assigned successfully!', 'Success');
+          this.fetchTaskDetails(); // Reload task details
+        } else {
+          console.error('Error assigning task:', err);
+          this.toastr.error('Failed to assign task.', 'Error');
+        }
+      },
     });
-    this.loadTaskDetails();
   }
+  
 
   fetchTaskDetails(): void {
     this.taskService.getTaskById(this.projectId, this.task.id).subscribe({
@@ -105,8 +111,10 @@ export class TaskDetailsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching task details:', err);
+        this.toastr.error('Failed to load task details.', 'Error');
       },
     });
   }
+  
   
 }
